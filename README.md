@@ -17,3 +17,4 @@
 - Criação de rotas API do Next para orquestrar e validar o cadastro de usuários, registrando em cookie de sessão com `nookies`
 - Conectando com o Google para conectar o calendário com a nossa aplicação, usando `NextAuth.js`
 - Criando um Adapter personalizado com o `NextAuth.js` para orquestrar a persistência da autenticação com o `Prisma`
+- Validação bem completa do formulário de horários disponíveis com `react-hook-forms` e `Zod`
