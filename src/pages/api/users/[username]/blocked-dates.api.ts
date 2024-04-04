@@ -1,0 +1,64 @@
+import { prisma } from '@/lib/prisma'
+import { NextApiRequest, NextApiResponse } from 'next'
+
+export default async function handle(
+  req: NextApiRequest,
+  res: NextApiResponse,
+) {
+  if (req.method !== 'GET') {
+    return res.status(405).end()
+  }
+
+  const username = String(req.query.username)
+  const { year, month } = req.query
+
+  if (!year || !month) {
+    return res.status(400).json({ message: 'Year and/or Month not provided' })
+  }
+
+  if (!username) {
+    return res.status(400).json({ message: 'Bad Request, user not provided' })
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+    select: {
+      id: true,
+    },
+  })
+
+  if (!user) {
+    return res.status(400).json({ message: 'User not found' })
+  }
+
+  const availableWeekDays = await prisma.userTimeInterval.findMany({
+    where: {
+      user_id: user.id,
+    },
+    select: {
+      week_day: true,
+    },
+  })
+
+  const blockedWeekDays = [0, 1, 2, 3, 4, 5, 6].filter((weekDay) => {
+    return !availableWeekDays.some(
+      (availableWeekDay) => availableWeekDay.week_day === weekDay,
+    )
+  })
+
+  const blockedDatesRaw = await prisma.$queryRaw`
+    SELECT 
+      id 
+    FROM 
+      schedulings S
+    WHERE 1=1
+      AND S.user_id = ${user.id}
+      AND DATE_FORMAT(S.date, "%Y-%m") = ${`${year}-${month}`}
+  `
+
+  return res.json({
+    blockedDatesRaw,
+  })
+}
