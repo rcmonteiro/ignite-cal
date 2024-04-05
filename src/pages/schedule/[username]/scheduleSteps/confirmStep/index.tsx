@@ -1,5 +1,8 @@
+import { api } from '@/lib/axios'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Text, TextArea, TextInput } from '@ignite-ui/react'
+import dayjs from 'dayjs'
+import { useRouter } from 'next/router'
 import { CalendarBlank, Clock } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -8,12 +11,20 @@ import { ConfirmForm, FormActions, FormError, FormHeader } from './styles'
 const confirmFormSchema = z.object({
   name: z.string().min(3, { message: 'Digite seu nome completo' }),
   email: z.string().email({ message: 'Digite um e-mail válido' }),
-  observation: z.string().nullable(),
+  observations: z.string().nullable(),
 })
 
 type ConfirmFormSchema = z.infer<typeof confirmFormSchema>
 
-export const ConfirmStep = () => {
+interface ConfirmStepProps {
+  schedulingDate: Date
+  onCancelDateTime: () => void
+}
+
+export const ConfirmStep = ({
+  schedulingDate,
+  onCancelDateTime,
+}: ConfirmStepProps) => {
   const {
     register,
     handleSubmit,
@@ -22,8 +33,26 @@ export const ConfirmStep = () => {
     resolver: zodResolver(confirmFormSchema),
   })
 
-  const handleConfirmSchedule = (data: ConfirmFormSchema) => {
-    console.log(data)
+  const router = useRouter()
+  const username = router.query.username
+
+  const formatedDate = dayjs(schedulingDate).format('DD[ de ]MMMM[ de ]YYYY')
+  const formatedTime = dayjs(schedulingDate).format('HH[:]mm[h]')
+
+  const handleConfirmSchedule = async (data: ConfirmFormSchema) => {
+    const { name, email, observations } = data
+    await api.post(`/users/${username}/schedule`, {
+      name,
+      email,
+      observations,
+      date: schedulingDate,
+    })
+
+    onCancelDateTime()
+  }
+
+  const handleCancelSchedule = () => {
+    onCancelDateTime()
   }
 
   return (
@@ -31,11 +60,11 @@ export const ConfirmStep = () => {
       <FormHeader>
         <Text>
           <CalendarBlank />
-          04 de abril de 2024
+          {formatedDate}
         </Text>
         <Text>
           <Clock />
-          18:00h
+          {formatedTime}
         </Text>
       </FormHeader>
 
@@ -59,11 +88,11 @@ export const ConfirmStep = () => {
       </label>
       <label>
         <Text size="sm">Observações</Text>
-        <TextArea {...register('observation')} />
+        <TextArea {...register('observations')} />
       </label>
 
       <FormActions>
-        <Button type="button" variant="tertiary">
+        <Button onClick={handleCancelSchedule} type="button" variant="tertiary">
           Cancelar
         </Button>
         <Button type="submit" variant="primary" disabled={isSubmitting}>
