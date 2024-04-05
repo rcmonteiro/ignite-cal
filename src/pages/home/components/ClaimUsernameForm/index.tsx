@@ -38,7 +38,7 @@ export const ClainUsernameForm = () => {
       <Form as="form" onSubmit={handleSubmit(handleClaimUsername)}>
         <TextInput
           size="sm"
-          prefix="ignite.com/"
+          prefix="rcmcal.com/"
           placeholder="seu-usuario"
           {...register('username')}
         />
