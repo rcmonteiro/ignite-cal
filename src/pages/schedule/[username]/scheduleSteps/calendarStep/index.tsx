@@ -64,7 +64,7 @@ export const CalendarStep = ({ onSelectDateTime }: CalendarStepProps) => {
 
   return (
     <Container isTimePickerOpen={isDateSelected}>
-      <Calendar selectedDate={selectedDate} onDateSelected={setSelectedDate} />
+      <Calendar onDateSelected={setSelectedDate} />
       {isDateSelected && (
         <TimePicker>
           <TimePickerHeader>

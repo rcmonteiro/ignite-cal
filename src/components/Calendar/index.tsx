@@ -30,11 +30,10 @@ interface BlockedDates {
 }
 
 interface CalendarProps {
-  selectedDate?: Date | null
   onDateSelected: (date: Date) => void
 }
 
-export const Calendar = ({ selectedDate, onDateSelected }: CalendarProps) => {
+export const Calendar = ({ onDateSelected }: CalendarProps) => {
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs().set('date', 1)
   })
