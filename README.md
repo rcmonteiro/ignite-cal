@@ -18,3 +18,4 @@
 - Conectando com o Google para conectar o calendário com a nossa aplicação, usando `NextAuth.js`
 - Criando um Adapter personalizado com o `NextAuth.js` para orquestrar a persistência da autenticação com o `Prisma`
 - Validação bem completa do formulário de horários disponíveis com `react-hook-forms` e `Zod`
+- Integração com `Google APIs` para gerenciar eventos no calendário do usuário
